@@ -278,7 +278,7 @@ namespace AO3EbookDownloader
                 try
                 {
                     if (drives[i].VolumeLabel == "Kindle" && drives[i].Name.First() != userSettings.DevicePath.First())
-                        if (MessageBox.Show("A Kindle was detected, set device location to that?", "AO3 eBood Downloader", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No) != MessageBoxResult.No)
+                        if (MessageBox.Show("A Kindle was detected, set device location to that?", "AO3 eBook Downloader", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No) != MessageBoxResult.No)
                         {
                             userSettings.DevicePath = drives[i].Name + "documents";
                         }

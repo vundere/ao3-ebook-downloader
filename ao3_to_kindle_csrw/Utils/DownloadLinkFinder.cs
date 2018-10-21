@@ -14,11 +14,9 @@ namespace AO3EbookDownloader
             string xpathTemplateWords = "//dd[@class=\"words\"]"; // //text() can be appended to select text directly
             string xpathTemplateDownload = "//a[text() = \"{0}\"]";
 
-            string adultUrl = url + "?view_adult=true";
-
-            string htmlCode = GetHtmlString(adultUrl);
-            var htmlDoc = new HtmlDocument();
-            htmlDoc.LoadHtml(htmlCode);
+            url = url + "?view_adult=true";
+            HtmlWeb web = new HtmlWeb();
+            var htmlDoc = web.Load(url);
 
             try
             {
@@ -40,19 +38,16 @@ namespace AO3EbookDownloader
             }
             catch
             {
-                fic = GetFic(ProceedUrl(adultUrl), formats);
+                fic = GetFic(ProceedUrl(url), formats);
             }
             return fic;
         }
 
-
-
         private static String ProceedUrl (String url)
         {
             string newUrl = url;
-            string htmlCode = GetHtmlString(url);
-            var htmlDoc = new HtmlDocument();
-            htmlDoc.LoadHtml(htmlCode);
+            HtmlWeb web = new HtmlWeb();
+            var htmlDoc = web.Load(url);
 
             string xpathToProceedButton = "//a[text() = \"Proceed\"]";
 
@@ -70,15 +65,6 @@ namespace AO3EbookDownloader
             }
 
             return newUrl;
-        }
-
-        private static String GetHtmlString(String url)
-        {
-            using (WebClient client = new WebClient())
-            {
-                string htmlCode = client.DownloadString(url);
-                return htmlCode;
-            }
         }
     }
 }
