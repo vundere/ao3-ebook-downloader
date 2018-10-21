@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28124.53
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AO3EbookDownloader", "ao3_to_kindle_csrw\AO3EbookDownloader.csproj", "{0F62E556-AFF6-4612-9C99-CE0080C3D7D0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0F62E556-AFF6-4612-9C99-CE0080C3D7D0}.Debug|Any CPU.ActiveCfg = Release|Any CPU
+		{0F62E556-AFF6-4612-9C99-CE0080C3D7D0}.Debug|Any CPU.Build.0 = Release|Any CPU
+		{0F62E556-AFF6-4612-9C99-CE0080C3D7D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0F62E556-AFF6-4612-9C99-CE0080C3D7D0}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7EBF2EA6-2805-4247-B816-9C2EB53B9A1D}
+	EndGlobalSection
+EndGlobal
