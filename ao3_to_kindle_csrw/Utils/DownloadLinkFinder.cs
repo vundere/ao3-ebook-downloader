@@ -14,33 +14,69 @@ namespace AO3EbookDownloader
             string xpathTemplateWords = "//dd[@class=\"words\"]"; // //text() can be appended to select text directly
             string xpathTemplateDownload = "//a[text() = \"{0}\"]";
 
+            string adultUrl = url + "?view_adult=true";
+
+            string htmlCode = GetHtmlString(adultUrl);
+            var htmlDoc = new HtmlDocument();
+            htmlDoc.LoadHtml(htmlCode);
+
+            try
+            {
+                string title = htmlDoc.DocumentNode.SelectSingleNode(xpathTemplateTitle).InnerText;
+                string lengthString = htmlDoc.DocumentNode.SelectSingleNode(xpathTemplateWords).InnerText;
+                int length = int.Parse(lengthString);
+
+                fic.Title = title;
+                fic.Length = length;
+
+                Dictionary<string, string> downloadLinks = new Dictionary<string, string>();
+                foreach (string format in formats)
+                {
+                    string formatPath = string.Format(xpathTemplateDownload, format);
+                    string formatUrl = htmlDoc.DocumentNode.SelectSingleNode(formatPath).Attributes["href"].Value;
+                    downloadLinks.Add(format, Constants.BaseUrl + formatUrl);
+                }
+                fic.Downloads = downloadLinks;
+            }
+            catch
+            {
+                fic = GetFic(ProceedUrl(adultUrl), formats);
+            }
+            return fic;
+        }
+
+
+
+        private static String ProceedUrl (String url)
+        {
+            string newUrl = url;
             string htmlCode = GetHtmlString(url);
             var htmlDoc = new HtmlDocument();
             htmlDoc.LoadHtml(htmlCode);
-            
-            string title = htmlDoc.DocumentNode.SelectSingleNode(xpathTemplateTitle).InnerText;
-            string lengthString = htmlDoc.DocumentNode.SelectSingleNode(xpathTemplateWords).InnerText;
-            int length = int.Parse(lengthString);
 
-            fic.Title = title;
-            fic.Length = length;
+            string xpathToProceedButton = "//a[text() = \"Proceed\"]";
 
-            Dictionary<string, string> downloadLinks = new Dictionary<string, string>();
-            foreach (string format in formats)
+            try
             {
-                string formatPath = string.Format(xpathTemplateDownload, format);
-                string formatUrl = htmlDoc.DocumentNode.SelectSingleNode(formatPath).Attributes["href"].Value;
-                downloadLinks.Add(format, Constants.BaseUrl + formatUrl);
+                string redirLink = htmlDoc.DocumentNode.SelectSingleNode(xpathToProceedButton).Attributes["href"].Value;
+                if (redirLink != "")
+                {
+                    newUrl = Constants.BaseUrl + redirLink;
+                }
             }
-            fic.Downloads = downloadLinks;
-            return fic;
+            catch
+            {
+                // this just means that we're already where we want to be, and no further navigation is needed.
+            }
+
+            return newUrl;
         }
 
         private static String GetHtmlString(String url)
         {
             using (WebClient client = new WebClient())
             {
-                string htmlCode = client.DownloadString(url+"?view_adult=True");
+                string htmlCode = client.DownloadString(url);
                 return htmlCode;
             }
         }

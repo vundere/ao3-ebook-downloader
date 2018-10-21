@@ -31,7 +31,7 @@
                 </RichTextBox.Resources>
             </RichTextBox>
             <Grid Height="21" VerticalAlignment="Bottom">
-                <Label Content="v.0.1.0.0" Margin="0" x:Name="labelVersion" HorizontalAlignment="Left" FontSize="9"></Label>
+                <Label Content="v.0.0.0.0" Margin="0" x:Name="labelVersion" HorizontalAlignment="Left" FontSize="9"></Label>
             </Grid>
         </Grid>
         <StackPanel x:Name="innerRight" HorizontalAlignment="Right" Margin="0,4,10,10" Width="126">

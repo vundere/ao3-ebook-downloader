@@ -10,6 +10,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using Config.Net;
 using System.Threading;
+using System.Reflection;
 
 namespace AO3EbookDownloader
 {
@@ -45,6 +46,8 @@ namespace AO3EbookDownloader
 
             ServicePointManager.DefaultConnectionLimit = 50;
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+
+            labelVersion.Content = "v " + Assembly.GetEntryAssembly().GetName().Version;
         }
 
         #endregion Constructor
@@ -152,30 +155,32 @@ namespace AO3EbookDownloader
             return selFormats;
         }
     
-        private List<Fic> getFics(List<String> urls)
+        private Fic getFic(String url)
         {
-            var fics = new List<Fic>();
-
-            foreach (var url in urls)
+            Fic fic = new Fic();
+            if (new Uri(url).Host != new Uri(Constants.BaseUrl).Host)
             {
-                if (new Uri(url).Host != new Uri(Constants.BaseUrl).Host)
-                {
-                    Log($"{url} is from an unsupported domain, this application only supports pages from AO3.");
-                    continue;
-                }
-                Log("Fetching " + url);
-
-                try
-                {
-                    fics.Add(DownloadLinkFinder.GetFic(url, getSelectedFormats()));
-                }
-                catch (Exception)
-                {
-                    Log($"Unable to get download links for {url}");
-                    continue;
-                }
+                Log($"{url} is from an unsupported domain, this application only supports pages from AO3.");
+                return null;
             }
-                return fics;
+            if (url.Contains("series"))
+            {
+                Log($"{url} is a series, this application currently does not support downloading entire series. Skipping...");
+                return null;
+            }
+
+            Log("Fetching " + url);
+
+            try
+            {
+                fic = DownloadLinkFinder.GetFic(url, getSelectedFormats());
+                return fic;
+            }
+            catch (Exception)
+            {
+                Log($"Unable to get download links for {url}");
+                return null;
+            }
         }
 
         private void MoveToDevice(String fPath)
@@ -357,7 +362,7 @@ namespace AO3EbookDownloader
                 return;
             }
 
-            List<String> urlEntries = pasteBox.Text.Split(new String[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).ToList();
+            List<String> urlEntries = pasteBox.Text.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries).ToList();
             urlEntries = urlEntries.Distinct().ToList();
 
             this.pendingDownloads = new List<WebClient>();
@@ -369,7 +374,20 @@ namespace AO3EbookDownloader
 
             Task.Factory.StartNew(() =>
             {
-                fics = getFics(urlEntries);
+                Task[] tasks = new Task[urlEntries.Count];
+                for (int i = 0; i < urlEntries.Count; i++)
+                {
+                    string urlEntry = urlEntries[i];
+                    tasks[i] = Task.Factory.StartNew(() => 
+                    {
+                        Fic fic = getFic(urlEntry);
+                        if (fic != null)
+                        {
+                            fics.Add(fic);
+                        }
+                    });
+                }
+                Task.WaitAll(tasks);
             }).ContinueWith(x =>
             {
                 foreach (Fic fic in fics)
@@ -378,6 +396,7 @@ namespace AO3EbookDownloader
                     {
                         dlLinks.Add(entry.Value);
                     }
+                    
                 }
             }).ContinueWith(x =>
             {
@@ -438,8 +457,7 @@ namespace AO3EbookDownloader
 
         private void Move_Click(object sender, RoutedEventArgs e)
         {
-            string deviceDriveLetter = userSettings.DevicePath.Substring(0, 1);
-            if (Directory.Exists($@"{deviceDriveLetter}:\"))
+            if (Directory.Exists($@"{userSettings.DevicePath.Substring(0, 1)}:\"))
             {
                 Task.Factory.StartNew(() =>
                 {
