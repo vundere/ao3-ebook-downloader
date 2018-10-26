@@ -11,5 +11,7 @@ namespace AO3EbookDownloader
         public static readonly String SettingsPath = Directory.GetParent(Assembly.GetExecutingAssembly().Location) + @"\Settings.ini";
 
         public static readonly String BaseUrl = "https://archiveofourown.org";
+
+        public static readonly String GitHubUrl = "https://github.com/vundere/ao3-ebook-downloader";
     }
 }

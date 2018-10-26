@@ -11,6 +11,7 @@ using System.Windows.Media;
 using Config.Net;
 using System.Threading;
 using System.Reflection;
+using System.Diagnostics;
 
 namespace AO3EbookDownloader
 {
@@ -538,8 +539,13 @@ namespace AO3EbookDownloader
             DetectKindle();
         }
 
+        private void LabelVersion_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            Process.Start(Constants.GitHubUrl);
+        }
+
         #endregion Events
 
-        
+       
     }
 }
