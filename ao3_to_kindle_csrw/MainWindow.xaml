@@ -32,6 +32,11 @@
             </RichTextBox>
             <Grid Height="21" VerticalAlignment="Bottom">
                 <Label Content="v.0.0.0.0" Margin="0" x:Name="labelVersion" HorizontalAlignment="Left" FontSize="9"></Label>
+                <Label x:Name="labelProgressLinks" Content="0" HorizontalAlignment="Right" FontSize="9" Margin="0,0,40,0" ToolTip="URLs to process."/>
+                <Label x:Name="labelProgressSeparatorOne" Content="/" HorizontalAlignment="Right" FontSize="9" Margin="0,0,30,0"/>
+                <Label x:Name="labelProgressDownloaded" Content="0" HorizontalAlignment="Right" FontSize="9" Margin="0,0,20,0" ToolTip="Successful downloads."/>
+                <Label x:Name="labelProgressSeparatorTwo" Content="/" HorizontalAlignment="Right" FontSize="9" Margin="0,0,10,0"/>
+                <Label x:Name="labelProgressCopied" Content="0" HorizontalAlignment="Right" FontSize="9" Margin="0,0,0,0" ToolTip="Successfully copied files."/>
             </Grid>
         </Grid>
         <StackPanel x:Name="innerRight" HorizontalAlignment="Right" Margin="0,4,10,10" Width="126">

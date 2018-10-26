@@ -122,6 +122,7 @@ namespace AO3EbookDownloader
                         downloadedFiles.Add(filename);
                         this.pendingDownloads.Remove(w);
                     }
+                    IncrementProgress(labelProgressDownloaded);
                     Log($"Downloaded {filename}...");
                 }
             }
@@ -185,12 +186,12 @@ namespace AO3EbookDownloader
 
         private void MoveToDevice(String fPath)
         {
-            string fileName = System.IO.Path.GetFileName(fPath);
-            string sourcePath = System.IO.Path.GetDirectoryName(fPath);
+            string fileName = Path.GetFileName(fPath);
+            string sourcePath = Path.GetDirectoryName(fPath);
             string targetPath = userSettings.DevicePath;
 
-            string sourceFile = System.IO.Path.Combine(sourcePath, fileName);
-            string destFile = System.IO.Path.Combine(targetPath, fileName);
+            string sourceFile = Path.Combine(sourcePath, fileName);
+            string destFile = Path.Combine(targetPath, fileName);
 
             CreateFolder(targetPath);
 
@@ -201,6 +202,7 @@ namespace AO3EbookDownloader
             }
 
             File.Copy(sourceFile, destFile, true);
+            IncrementProgress(labelProgressCopied);
             Log($"{fileName} moved to device.");
         }
 
@@ -244,7 +246,7 @@ namespace AO3EbookDownloader
             
         }
 
-        private Boolean CreateFolder(string folderPath)
+        private Boolean CreateFolder(String folderPath)
         {
             try
             {
@@ -290,6 +292,14 @@ namespace AO3EbookDownloader
             }
         }
 
+        private void IncrementProgress(System.Windows.Controls.Label label)
+        {
+            this.Dispatcher.Invoke(new Action(() =>
+            {
+                label.Content = Convert.ToInt32(label.Content) + 1;
+            }));
+        }
+
         private void InitializeSettings()
         {
             if(String.IsNullOrEmpty(userSettings.DownloadLocation))
@@ -326,7 +336,6 @@ namespace AO3EbookDownloader
 
         #region Events
 
-        // TODO: Fill with current path, store selected path
         private void SaveBrowse_Click(object sender, RoutedEventArgs e)
         {
             using (System.Windows.Forms.FolderBrowserDialog dialog = new System.Windows.Forms.FolderBrowserDialog())
@@ -364,6 +373,10 @@ namespace AO3EbookDownloader
 
             List<String> urlEntries = pasteBox.Text.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries).ToList();
             urlEntries = urlEntries.Distinct().ToList();
+            this.Dispatcher.Invoke(new Action(() => 
+            {
+                labelProgressLinks.Content = urlEntries.Count;
+            }));
 
             this.pendingDownloads = new List<WebClient>();
             this.activeDownloads = true;
@@ -471,6 +484,7 @@ namespace AO3EbookDownloader
                 }).ContinueWith(x => 
                 {
                     // Clear the list of downloaded files, disable the button to copy them
+                    // TODO better validation, retry etc.
                     downloadedFiles.Clear();
                     this.Dispatcher.Invoke(new Action(() => 
                     {
