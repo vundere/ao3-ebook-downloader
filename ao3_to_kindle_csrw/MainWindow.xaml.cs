@@ -280,8 +280,8 @@ namespace AO3EbookDownloader
             {
                 try
                 {
-                    if (drives[i].VolumeLabel == "Kindle")
-                        if (MessageBox.Show("A Kindle was detected, set device location to that?", "AO3 eBook Downloader", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No) != MessageBoxResult.No)
+                    if (drives[i].VolumeLabel == "Kindle" && (userSettings.DevicePath == "" || drives[i].Name.First() != userSettings.DevicePath.First()))
+                        if (MessageBox.Show("A Kindle was detected, set device location to Kindle path?", "AO3 eBook Downloader", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No) != MessageBoxResult.No)
                         {
                             userSettings.DevicePath = drives[i].Name + "documents";
                             this.Dispatcher.Invoke(new Action(() => 
