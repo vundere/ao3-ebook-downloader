@@ -87,8 +87,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="CustomDataTypes\Fic.cs" />
+    <Compile Include="Helpers\AO3LinkHelper.cs" />
     <Compile Include="Misc\Settings.cs" />
-    <Compile Include="Utils\DownloadLinkFinder.cs" />
     <Compile Include="Utils\FilenameCleaner.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

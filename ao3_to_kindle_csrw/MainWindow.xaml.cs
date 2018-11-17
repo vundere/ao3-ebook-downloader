@@ -157,9 +157,14 @@ namespace AO3EbookDownloader
             return selFormats;
         }
     
-        private Fic getFic(String url)
+        private Fic GetFic(String url)
         {
             Fic fic = new Fic();
+            url = url + "?view_adult=true";
+            string htmlCode = "";
+            List<string> formats = getSelectedFormats();
+
+
             if (new Uri(url).Host != new Uri(Constants.BaseUrl).Host)
             {
                 Log($"{url} is from an unsupported domain, this application only supports pages from AO3.");
@@ -175,7 +180,34 @@ namespace AO3EbookDownloader
 
             try
             {
-                fic = DownloadLinkFinder.GetFic(url, getSelectedFormats());
+                using (WebClient w = new WebClient())
+                {
+
+                    if (this.userCancel)
+                    {
+                        return null;
+                    }
+
+                    try
+                    {
+                        htmlCode = w.DownloadString(url);
+                    }
+                    catch
+                    {
+                        Log($"Failed to get data for {url}");
+                        return null;
+                    }
+
+                    try
+                    {
+                        fic = AO3LinkHelper.GetFicData(htmlCode, formats);
+                    }
+                    catch
+                    {
+                        htmlCode = w.DownloadString(AO3LinkHelper.ProceedUrl(url));
+                        fic = AO3LinkHelper.GetFicData(htmlCode, formats);
+                    }
+                }
                 return fic;
             }
             catch (Exception)
@@ -378,10 +410,7 @@ namespace AO3EbookDownloader
 
             List<String> urlEntries = pasteBox.Text.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries).ToList();
             urlEntries = urlEntries.Distinct().ToList();
-            this.Dispatcher.Invoke(new Action(() => 
-            {
-                labelProgressLinks.Content = urlEntries.Count;
-            }));
+            
 
             this.pendingDownloads = new List<WebClient>();
             this.activeDownloads = true;
@@ -392,20 +421,15 @@ namespace AO3EbookDownloader
 
             Task.Factory.StartNew(() =>
             {
-                Task[] tasks = new Task[urlEntries.Count];
-                for (int i = 0; i < urlEntries.Count; i++)
+                foreach (string urlEntry in urlEntries)
                 {
-                    string urlEntry = urlEntries[i];
-                    tasks[i] = Task.Factory.StartNew(() => 
+                    Fic fic = GetFic(urlEntry);
+                    if (fic != null)
                     {
-                        Fic fic = getFic(urlEntry);
-                        if (fic != null)
-                        {
-                            fics.Add(fic);
-                        }
-                    });
+                        fics.Add(fic);
+                        IncrementProgress(labelProgressedFetched);
+                    }
                 }
-                Task.WaitAll(tasks);
             }).ContinueWith(x =>
             {
                 foreach (Fic fic in fics)
@@ -524,6 +548,10 @@ namespace AO3EbookDownloader
             {
                 var lines = pasteBox.Text.Split(new[] { Environment.NewLine }, StringSplitOptions.None).Where(x => !string.IsNullOrEmpty(x)).ToArray();
                 pasteBox.Text = string.Join($"{Environment.NewLine}", lines);
+                this.Dispatcher.Invoke(new Action(() =>
+                {
+                    labelProgressLinks.Content = lines.Length;
+                }));
             }
         }
 

@@ -45,12 +45,14 @@
             </GroupBox>
             <GroupBox x:Name="groupBoxProgress" Margin="0,0,0,0" Header="Progress" Height="151">
                 <Grid x:Name="gridMisc" Margin="0,0,0,12">
-                    <Label x:Name="labelTextLinks" Content="Total URLs" HorizontalAlignment="Left" FontSize="9" Margin="16,23,0,0" VerticalAlignment="Top"/>
+                    <Label x:Name="labelTextLinks" Content="Total URLs" HorizontalAlignment="Left" FontSize="9" Margin="5,23,0,0" VerticalAlignment="Top"/>
                     <Label x:Name="labelProgressLinks" Content="0" HorizontalAlignment="Right" FontSize="9" Margin="0,23,17,71" ToolTip="URLs to process."/>
-                    <Label x:Name="labelTextDownloaded" Content="Downloaded" HorizontalAlignment="Left" FontSize="9" Margin="16,45,0,0" VerticalAlignment="Top"/>
-                    <Label x:Name="labelProgressDownloaded" Content="0" HorizontalAlignment="Right" FontSize="9" Margin="0,46,17,48" ToolTip="Successful downloads."/>
-                    <Label x:Name="labelTextCopied" Content="Copied" HorizontalAlignment="Left" FontSize="9" Margin="16,67,0,0" VerticalAlignment="Top"/>
-                    <Label x:Name="labelProgressCopied" Content="0" HorizontalAlignment="Right" FontSize="9" Margin="0,67,17,29" ToolTip="Successfully copied files."/>
+                    <Label x:Name="labelTextFetched" Content="Prepared" FontSize="9" Margin="5,45,0,0" HorizontalAlignment="Left" Width="62" Height="22" VerticalAlignment="Top" ToolTip="Works processed and ready to download."/>
+                    <Label x:Name="labelProgressedFetched" Content="0" FontSize="9" Margin="0,44,17,50" HorizontalAlignment="Right" />
+                    <Label x:Name="labelTextDownloaded" Content="Downloaded" HorizontalAlignment="Left" FontSize="9" Margin="5,67,0,0" VerticalAlignment="Top"/>
+                    <Label x:Name="labelProgressDownloaded" Content="0" HorizontalAlignment="Right" FontSize="9" Margin="0,67,17,27" ToolTip="Successful downloads."/>
+                    <Label x:Name="labelTextCopied" Content="Copied" HorizontalAlignment="Left" FontSize="9" Margin="5,89,0,0" VerticalAlignment="Top"/>
+                    <Label x:Name="labelProgressCopied" Content="0" HorizontalAlignment="Right" FontSize="9" Margin="0,89,17,7" ToolTip="Successfully copied files."/>
                 </Grid>
             </GroupBox>
             <GroupBox x:Name="groupBoxControls" Margin="0,0,0,0" Header="Controls" Height="120">
