@@ -546,7 +546,7 @@ namespace AO3EbookDownloader
             }
             else
             {
-                var lines = pasteBox.Text.Split(new[] { Environment.NewLine }, StringSplitOptions.None).Where(x => !string.IsNullOrEmpty(x)).ToArray();
+                var lines = pasteBox.Text.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None).Where(x => !string.IsNullOrEmpty(x)).ToArray();
                 pasteBox.Text = string.Join($"{Environment.NewLine}", lines);
                 this.Dispatcher.Invoke(new Action(() =>
                 {
