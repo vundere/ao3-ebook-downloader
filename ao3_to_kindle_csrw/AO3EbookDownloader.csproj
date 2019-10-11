@@ -59,6 +59,9 @@
     <Reference Include="HtmlAgilityPack, Version=1.8.9.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
       <HintPath>..\packages\HtmlAgilityPack.1.8.9\lib\Net45\HtmlAgilityPack.dll</HintPath>
     </Reference>
+    <Reference Include="LiteDB, Version=4.1.4.0, Culture=neutral, PublicKeyToken=4ee40123013c9f27, processorArchitecture=MSIL">
+      <HintPath>..\packages\LiteDB.4.1.4\lib\net40\LiteDB.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -86,11 +89,40 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="CustomDataTypes\Kindle.cs" />
+    <Compile Include="CustomDataTypes\SerializableDictionary.cs" />
     <Compile Include="CustomDataTypes\Fic.cs" />
     <Compile Include="Helpers\AO3LinkHelper.cs" />
+    <Compile Include="Helpers\KindleLibrarian.cs" />
+    <Compile Include="Helpers\Liter.cs" />
+    <Compile Include="Helpers\MiddleDude.cs" />
+    <Compile Include="Helpers\XmlOperator.cs" />
+    <Compile Include="Misc\SharedData.cs" />
+    <Compile Include="Utils\ExTools.cs" />
+    <Compile Include="Utils\HRT.cs" />
+    <Compile Include="Utils\OffsiteKindle.cs" />
+    <Compile Include="Utils\WorkIdent.cs" />
+    <Compile Include="Windows\DelDiag.xaml.cs">
+      <DependentUpon>DelDiag.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\LibWindow.xaml.cs">
+      <DependentUpon>LibWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Misc\Settings.cs" />
-    <Compile Include="Utils\FilenameCleaner.cs" />
-    <Page Include="MainWindow.xaml">
+    <Compile Include="Misc\Xpaths.cs" />
+    <Compile Include="Utils\FileTools.cs" />
+    <Compile Include="Windows\ProgressWindow.xaml.cs">
+      <DependentUpon>ProgressWindow.xaml</DependentUpon>
+    </Compile>
+    <Page Include="Windows\DelDiag.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\LibWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -98,10 +130,14 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="MainWindow.xaml.cs">
+    <Compile Include="Windows\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Windows\ProgressWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Misc\StaticData.cs" />

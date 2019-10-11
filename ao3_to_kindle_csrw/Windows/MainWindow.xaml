@@ -4,23 +4,19 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="AO3 eBook Downloader" Height="450" Width="800"
-        MinHeight="440" MinWidth="800"
+        Title="AO3 eBook Downloader" Height="500" Width="800"
+        MinHeight="500" MinWidth="800"
         Closing="Window_Closing"
         ContentRendered="Window_ContentRendered">
     <Grid Margin="0,0,0,0">
         <Grid x:Name="innerLeft" Margin="10,10,141,10">
             <TextBox x:Name="pasteBox" AcceptsReturn="True" Height="150" TextWrapping="Wrap" Text="" VerticalAlignment="Top" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" GotFocus="PasteBox_GotFocus" LostFocus="PasteBox_LostFocus"/>
-            <Grid x:Name="dlLocGrid" Margin="0,154,0,0" Height="23" VerticalAlignment="Top">
-                <TextBlock x:Name="saveTo" HorizontalAlignment="Left" TextWrapping="Wrap" Text="Save to:" VerticalAlignment="Top" Height="23" Width="63" RenderTransformOrigin="0.524,0.203" Margin="22,2,0,-2"/>
-                <TextBox x:Name="saveLocation" Height="23" Margin="85,0,45,0" TextWrapping="Wrap" Text="{Binding DownloadLocation}" VerticalAlignment="Top"/>
-                <Button x:Name="dlBrowse" Content="..." Click="SaveBrowse_Click" HorizontalAlignment="Right" VerticalAlignment="Top" Width="32" Height="23"/>
-            </Grid>
-            <Grid x:Name="deviceLocGrid" Margin="0, 180, 0, 0" Height="23" VerticalAlignment="Top">
-                <TextBlock x:Name="devicePath" HorizontalAlignment="Left" TextWrapping="Wrap" Text="Device path:" VerticalAlignment="Top" Height="23"/>
-                <TextBox x:Name="deviceLocation" Height="23" Margin="85,0,45,0" TextWrapping="Wrap" Text="{Binding DevicePath}" VerticalAlignment="Top"/>
-                <Button x:Name="deviceBrowse" Content="..." VerticalAlignment="Top" Height="23" Click="DeviceBrowse_Click" HorizontalAlignment="Right" Width="32"/>
-            </Grid>
+            <TextBlock x:Name="saveTo" HorizontalAlignment="Left" TextWrapping="Wrap" Text="Save to:" VerticalAlignment="Top" Height="23" Width="63" RenderTransformOrigin="0.524,0.203" Margin="22,159,0,0"/>
+            <TextBox x:Name="saveLocation" Height="23" Margin="85,155,45,0" TextWrapping="Wrap" Text="{Binding DownloadLocation}" VerticalAlignment="Top"/>
+            <Button x:Name="dlBrowse" Content="..." Click="SaveBrowse_Click" HorizontalAlignment="Right" VerticalAlignment="Top" Width="32" Height="23" Margin="0,155,0,0"/>
+            <TextBlock x:Name="devicePath" HorizontalAlignment="Left" TextWrapping="Wrap" Text="Device path:" VerticalAlignment="Top" Height="23" Margin="0,180,0,0"/>
+            <TextBox x:Name="deviceLocation" Height="23" Margin="85,180,45,0" TextWrapping="Wrap" Text="{Binding DevicePath}" VerticalAlignment="Top"/>
+            <Button x:Name="deviceBrowse" Content="..." VerticalAlignment="Top" Height="23" Click="DeviceBrowse_Click" HorizontalAlignment="Right" Width="32" Margin="0,180,0,0"/>
 
             <RichTextBox x:Name="logOutput" Margin="0,208,0,26" IsReadOnly="True" IsReadOnlyCaretVisible="True" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
                 <RichTextBox.Resources>
@@ -29,18 +25,17 @@
                     </Style>
                 </RichTextBox.Resources>
             </RichTextBox>
-            <Grid Height="21" VerticalAlignment="Bottom">
-                <Label Content="v.0.0.0.0" Margin="0" x:Name="labelVersion" HorizontalAlignment="Left" FontSize="9" Cursor="Hand" MouseDown="LabelVersion_MouseDown" Foreground="#FF1700FF" ToolTip="Click to go to GitHub repo for this application."/>
+            <Label Content="v.0.0.0.0" Margin="10,428,0,0" x:Name="labelVersion" HorizontalAlignment="Left" FontSize="9" Cursor="Hand" MouseDown="LabelVersion_MouseDown" Foreground="#FF1700FF" ToolTip="Click to go to GitHub repo for this application."/>
 
-            </Grid>
         </Grid>
         <StackPanel x:Name="innerRight" HorizontalAlignment="Right" Margin="0,4,10,10" Width="126">
-            <GroupBox x:Name="groupBoxFormats" Margin="0,0,0,0" Header="Formats" Height="108" VerticalAlignment="Bottom">
-                <Grid x:Name="gridFormats" Margin="10,6,55,4">
-                    <CheckBox x:Name="checkEpub" Content="EPUB" HorizontalAlignment="Left" Margin="-2,0,0,0" VerticalAlignment="Top" IsChecked="{Binding GetEpub}"/>
-                    <CheckBox x:Name="checkMobi" Content="MOBI" HorizontalAlignment="Left" Margin="-2,20,0,0" VerticalAlignment="Top" IsChecked="{Binding GetMobi}"/>
-                    <CheckBox x:Name="checkPdf" Content="PDF" HorizontalAlignment="Left" Margin="-2,40,0,0" VerticalAlignment="Top" IsChecked="{Binding GetPdf}"/>
-                    <CheckBox x:Name="checkHtml" Content="HTML" HorizontalAlignment="Left" Margin="-2,60,0,0" VerticalAlignment="Top" IsChecked="{Binding GetHtml}"/>
+            <GroupBox x:Name="groupBoxFormats" Margin="0,0,0,0" Header="Formats" Height="120" VerticalAlignment="Bottom">
+                <Grid x:Name="gridFormats" Margin="10,6,55,-4">
+                    <CheckBox x:Name="checkAzw3" Content="AZW3" HorizontalAlignment="Left" Margin="-2,-3,0,0" VerticalAlignment="Top" IsChecked="{Binding GetAzw3}"/>
+                    <CheckBox x:Name="checkEpub" Content="EPUB" HorizontalAlignment="Left" Margin="-2,17,0,0" VerticalAlignment="Top" IsChecked="{Binding GetEpub}"/>
+                    <CheckBox x:Name="checkMobi" Content="MOBI" HorizontalAlignment="Left" Margin="-2,37,0,0" VerticalAlignment="Top" IsChecked="{Binding GetMobi}"/>
+                    <CheckBox x:Name="checkPdf" Content="PDF" HorizontalAlignment="Left" Margin="-2,57,0,0" VerticalAlignment="Top" IsChecked="{Binding GetPdf}"/>
+                    <CheckBox x:Name="checkHtml" Content="HTML" HorizontalAlignment="Left" Margin="-2,77,0,0" VerticalAlignment="Top" IsChecked="{Binding GetHtml}"/>
                 </Grid>
             </GroupBox>
             <GroupBox x:Name="groupBoxProgress" Margin="0,0,0,0" Header="Progress" Height="151">
@@ -55,20 +50,14 @@
                     <Label x:Name="labelProgressCopied" Content="0" HorizontalAlignment="Right" FontSize="9" Margin="0,89,17,7" ToolTip="Successfully copied files."/>
                 </Grid>
             </GroupBox>
-            <GroupBox x:Name="groupBoxControls" Margin="0,0,0,0" Header="Controls" Height="120">
+            <GroupBox x:Name="groupBoxControls" Margin="0,0,0,0" Header="Controls" Height="129">
                 <Grid x:Name="gridControls">
                     <Button x:Name="buttonStart" Content="Start" HorizontalAlignment="Left" VerticalAlignment="Top" Width="110" Click="Start_Click" Margin="1,10,0,0"/>
                     <Button x:Name="buttonCancel" Content="Cancel" HorizontalAlignment="Left" Margin="1,35,0,0" VerticalAlignment="Top" Width="110" Click="Cancel_Click" IsEnabled="False"/>
                     <Button x:Name="buttonMove" Content="Copy To Device" HorizontalAlignment="Left" Margin="1,60,0,0" VerticalAlignment="Top" Width="110" Click="Move_Click" IsEnabled="False"/>
+                    <Button x:Name="buttonLib" Content="Open Library" HorizontalAlignment="Left" Margin="1,85,0,0" VerticalAlignment="Top" Width="110" Click="ButtonLib_Click" />
                 </Grid>
             </GroupBox>
         </StackPanel>
-
-
-
-
-
-
-
     </Grid>
 </Window>

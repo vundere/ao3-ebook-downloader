@@ -1,0 +1,162 @@
+﻿<Window x:Class="AO3EbookDownloader.LibWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:AO3EbookDownloader"
+        mc:Ignorable="d"
+        Title="Library" Height="600" Width="1300"
+        Closing="Window_Closing">
+    <Window.Resources>
+
+        <Style x:Key="FocusVisual">
+            <Setter Property="Control.Template">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <Rectangle Margin="2" SnapsToDevicePixels="true" Stroke="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" StrokeThickness="1" StrokeDashArray="1 2"/>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <SolidColorBrush x:Key="Button.Static.Background" Color="#FFDDDDDD"/>
+        <SolidColorBrush x:Key="Button.Static.Border" Color="#FF707070"/>
+        <SolidColorBrush x:Key="Button.MouseOver.Background" Color="#FFBEE6FD"/>
+        <SolidColorBrush x:Key="Button.MouseOver.Border" Color="#FF3C7FB1"/>
+        <SolidColorBrush x:Key="Button.Pressed.Background" Color="#FFC4E5F6"/>
+        <SolidColorBrush x:Key="Button.Pressed.Border" Color="#FF2C628B"/>
+        <SolidColorBrush x:Key="Button.Disabled.Background" Color="#FFF4F4F4"/>
+        <SolidColorBrush x:Key="Button.Disabled.Border" Color="#FFADB2B5"/>
+        <SolidColorBrush x:Key="Button.Disabled.Foreground" Color="#FF838383"/>
+        <Style x:Key="ButtonNoHover" TargetType="{x:Type Button}">
+            <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}"/>
+            <Setter Property="Background" Value="{StaticResource Button.Static.Background}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Button.Static.Border}"/>
+            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="1"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border x:Name="border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" SnapsToDevicePixels="true">
+                            <ContentPresenter x:Name="contentPresenter" Focusable="False" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsDefaulted" Value="true">
+                                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"/>
+                            </Trigger>
+                            <!--<Trigger Property="IsMouseOver" Value="true">
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource Button.MouseOver.Background}"/>
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource Button.MouseOver.Border}"/>
+                            </Trigger>-->
+                            <!--<Trigger Property="IsPressed" Value="true">
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource Button.Pressed.Background}"/>
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource Button.Pressed.Border}"/>
+                            </Trigger>-->
+                            <Trigger Property="IsEnabled" Value="false">
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource Button.Disabled.Background}"/>
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource Button.Disabled.Border}"/>
+                                <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{StaticResource Button.Disabled.Foreground}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+    </Window.Resources>
+    <Grid>
+        <Grid x:Name="innerGridDisplay" Margin="10,10,282,10">
+            <ListView ItemsSource="{DynamicResource ficList}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Tag="{ Binding Value.ID}" Loaded="Grid_Loaded">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid Width="Auto" Grid.Row="0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="45" />
+                                    <ColumnDefinition Width="Auto" MaxWidth="700" />
+                                    <ColumnDefinition Width="Auto" MaxWidth="700" />
+                                    <ColumnDefinition Width="Auto" MaxWidth="700" />
+                                    <ColumnDefinition Width="Auto" MaxWidth="700" />
+                                    <ColumnDefinition Width="Auto" MaxWidth="700" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="25" />
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Grid.Row="0" Grid.Column="0" Margin="2,5,10,2" FontSize="9" >ID:</TextBlock>
+                                <TextBlock Grid.Row="0" Grid.Column="1" Margin="2,5,10,2" FontSize="9" Text="{Binding Key}" />
+
+                                <TextBlock Grid.Row="0" Grid.Column="2" Margin="2,5,10,2" >Title:</TextBlock>
+                                <TextBlock Grid.Row="0" Grid.Column="3" Margin="2,5,10,2" Text="{Binding Value.Title}"/>
+                            </Grid>
+
+                            <Grid Width="900" Grid.Row="1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="50" />
+                                    <ColumnDefinition Width="700" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="25" />
+                                    <RowDefinition Height="25" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Grid.Row="0" Grid.Column="0" Margin="2,5,10,2" FontSize="9" >Author:</TextBlock>
+                                <TextBlock Grid.Row="0" Grid.Column="1" Margin="2,5,10,2" FontSize="9" Text="" Tag="{Binding Value.ID}" Loaded="AuthorLoad"/>
+
+                                <TextBlock Grid.Row="1" Grid.Column="0" Margin="2,5,10,2" >Ships:</TextBlock>
+                                <TextBlock Grid.Row="1" Grid.Column="1" Margin="2,5,10,2" Tag="{Binding Value.ID}" Loaded="RelLoad" />
+
+                                <TextBlock Grid.Row="2" Grid.Column="0" Margin="2,5,10,2" >Tags:</TextBlock>
+                                <TextBlock Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Margin="2,5,10,2" TextWrapping="Wrap" Tag="{Binding Value.ID}" Loaded="TagsLoad" />
+                            </Grid>
+
+                            <Grid Width="900" Grid.Row="2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="75" />
+                                    <ColumnDefinition Width="700" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="25" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="25" />
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Grid.Row="0" Grid.Column="0" Margin="2,5,10,2" FontSize="9" >Summary:</TextBlock>
+                                <TextBlock Grid.Row="1" Grid.Column="1" Margin="2,5,10,2" FontSize="9" Width="700" TextWrapping="Wrap" Tag="{Binding Value.ID}" Loaded="Summary_Loaded" />
+                            </Grid>
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Grid>
+        <Grid x:Name="innerGridControls" Margin="0,10,10,0" HorizontalAlignment="Right" Width="250" Height="549" VerticalAlignment="Top">
+            <TextBlock x:Name="TextBlockItemCountLabel" Text="Works: " Margin="10" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+            <TextBlock x:Name="TextBlockItemCount" Text="0" Margin="54,10,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+            <GroupBox x:Name="groupBoxDisplayControls" Header="Filters" Margin="10,31,10,359">
+                <Grid x:Name="gridDisplayControls" Margin="10">
+                    <Button x:Name="buttonKindleToggle" Content="On Kindle" FontSize="9" Background="#D98880" Click="ButtonKindleToggle_Click" Style="{DynamicResource ButtonNoHover}" Margin="10,10,108,87" />
+                </Grid>
+            </GroupBox>
+            <GroupBox x:Name="groupBoxLibMan" Header="Library management" Margin="10,195,10,185" >
+                <Grid x:Name="gridLibMan" Margin="-2,0">
+                    <Button x:Name="ButtonAddLib" Content="Add folder" Margin="34,10,34,112" />
+                    <Button x:Name="ButtonManageLib" Content="Manage folders" Margin="34,40,34,82" />
+                </Grid>
+            </GroupBox>
+            <GroupBox x:Name="groupBoxImpExp" Header="Import / Export" Margin="10,0,10,10" Height="170" VerticalAlignment="Bottom">
+                <Grid x:Name="gridImpExpInner" >
+                    <Button x:Name="ButtonSaveXml" Content="Export to .xml" Width="150" Click="ButtonSaveXml_Click" Margin="34,42,34,81" />
+                    <Button x:Name="ButtonLoadXml" Content="Import from .xml" Width="150" Click="ButtonLoadXml_Click" Margin="34,12,34,111" />
+                </Grid>
+            </GroupBox>
+        </Grid>
+    </Grid>
+</Window>

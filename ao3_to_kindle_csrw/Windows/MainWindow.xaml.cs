@@ -22,7 +22,7 @@ namespace AO3EbookDownloader
     {
         #region Fields
 
-        public Settings userSettings = new ConfigurationBuilder<Settings>().UseIniFile(Constants.SettingsPath).Build();
+        private Settings userSettings;
 
         private List<WebClient> pendingDownloads; 
 
@@ -32,12 +32,17 @@ namespace AO3EbookDownloader
 
         private Boolean userCancel = false;
 
+        private LibWindow libWin;
+
         #endregion Fields
 
         #region Constructor
 
         public MainWindow()
         {
+            SharedData.userSettings = new ConfigurationBuilder<Settings>().UseIniFile(Constants.SettingsPath).Build();
+            userSettings = SharedData.userSettings;
+
             InitializeSettings();
             InitializeComponent();
             DataContext = userSettings;
@@ -55,31 +60,34 @@ namespace AO3EbookDownloader
 
         #region Methods
 
-        private Boolean DownloadEbook(String downloadUrl)
+        private string DownloadEbook(String downloadUrl)
         {
             if (!CreateFolder(userSettings.DownloadLocation))
             {
-                return false;
+                return null;
             }
 
             int attempts = 0;
             bool fileDownloaded = false;
             string filename;
             Uri uri = new Uri(downloadUrl);
+            string work_id = uri.Segments[2];
+            work_id = work_id.Remove(work_id.Length - 1);
             string downloadUrlClean = uri.GetLeftPart(UriPartial.Path);
-            filename = FilenameCleaner.ToAllowedFileName(uri.Segments.Last());
+            filename = FileTools.ToAllowedFileName(uri.Segments.Last());
+            filename = $"{work_id}-{filename}";
             filename = $"{userSettings.DownloadLocation}/{filename}";
 
             if (File.Exists(filename))
             {
                 // TODO popup window to allow for replacing existing file? checkbox to enable/disable feature?
                 Log("This file already exists, skipping...");
-                return false;
+                return null;
             }
 
             do
             {
-                var doneEvent = new AutoResetEvent(false);
+                var doneEvent = new AutoResetEvent(false);  // TODO dispose
                 using (var w = new WebClient())
                 {
                     
@@ -112,7 +120,7 @@ namespace AO3EbookDownloader
                     {
                         if (this.userCancel)
                         {
-                            return false;
+                            return null;
                         }
                         this.pendingDownloads.Add(w);
                         w.DownloadFileAsync(new Uri(downloadUrl), filename);
@@ -129,7 +137,7 @@ namespace AO3EbookDownloader
             }
             while (!fileDownloaded && attempts < userSettings.DownloadMaxAttempts);
 
-            return true;
+            return filename;
         }
 
         private List<string> getSelectedFormats()
@@ -137,6 +145,10 @@ namespace AO3EbookDownloader
             List<string> selFormats = new List<string>();
 
             // Look into a more efficient way of accomplishing this
+            if (userSettings.GetAzw3)
+            {
+                selFormats.Add("AZW3");
+            }
             if (userSettings.GetEpub)
             {
                 selFormats.Add("EPUB");
@@ -160,10 +172,7 @@ namespace AO3EbookDownloader
         private Fic GetFic(String url)
         {
             Fic fic = new Fic();
-            url = url + "?view_adult=true";
-            string htmlCode = "";
-            List<string> formats = getSelectedFormats();
-
+            url += "?view_adult=true";
 
             if (new Uri(url).Host != new Uri(Constants.BaseUrl).Host)
             {
@@ -182,12 +191,13 @@ namespace AO3EbookDownloader
             {
                 using (WebClient w = new WebClient())
                 {
-
+                    w.Encoding = System.Text.Encoding.UTF8;
                     if (this.userCancel)
                     {
                         return null;
                     }
 
+                    string htmlCode;
                     try
                     {
                         htmlCode = w.DownloadString(url);
@@ -200,14 +210,15 @@ namespace AO3EbookDownloader
 
                     try
                     {
-                        fic = AO3LinkHelper.GetFicData(htmlCode, formats);
+                        fic = AO3LinkHelper.GetFicData(htmlCode);
                     }
                     catch
                     {
                         htmlCode = w.DownloadString(AO3LinkHelper.ProceedUrl(url));
-                        fic = AO3LinkHelper.GetFicData(htmlCode, formats);
+                        fic = AO3LinkHelper.GetFicData(htmlCode);
                     }
                 }
+                fic.Url = url;
                 return fic;
             }
             catch (Exception)
@@ -251,6 +262,7 @@ namespace AO3EbookDownloader
                     buttonMove.IsEnabled = false;
                     dlBrowse.IsEnabled = false;
                     deviceBrowse.IsEnabled = false;
+                    checkAzw3.IsEnabled = false;
                     checkEpub.IsEnabled = false;
                     checkMobi.IsEnabled = false;
                     checkPdf.IsEnabled = false;
@@ -264,6 +276,7 @@ namespace AO3EbookDownloader
                     buttonCancel.IsEnabled = false;
                     dlBrowse.IsEnabled = true;
                     deviceBrowse.IsEnabled = true;
+                    checkAzw3.IsEnabled = true;
                     checkEpub.IsEnabled = true;
                     checkMobi.IsEnabled = true;
                     checkPdf.IsEnabled = true;
@@ -279,7 +292,7 @@ namespace AO3EbookDownloader
             
         }
 
-        private Boolean CreateFolder(String folderPath)
+        public Boolean CreateFolder(String folderPath)
         {
             try
             {
@@ -307,12 +320,18 @@ namespace AO3EbookDownloader
 
         private void DetectKindle()
         {
+            if (Kindle.Detect())
+            {
+
+            }
+
             DriveInfo[] drives = DriveInfo.GetDrives();
             for (int i = 0; i < drives.Count(); i++)
             {
                 try
                 {
                     if (drives[i].VolumeLabel == "Kindle" && (userSettings.DevicePath == "" || drives[i].Name.First() != userSettings.DevicePath.First()))
+                    {
                         if (MessageBox.Show("A Kindle was detected, set device location to Kindle path?", "AO3 eBook Downloader", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No) != MessageBoxResult.No)
                         {
                             userSettings.DevicePath = drives[i].Name + "documents";
@@ -321,6 +340,10 @@ namespace AO3EbookDownloader
                                 deviceLocation.Text = userSettings.DevicePath;
                             }));
                         }
+                        break;
+                    }
+                        
+
                 }
                 catch (IOException)
                 {
@@ -348,7 +371,7 @@ namespace AO3EbookDownloader
             DataContext = userSettings;
         }
 
-        private void Log(String message)
+        public void Log(String message)
         {
             this.Dispatcher.Invoke(new Action(() =>
             {
@@ -416,7 +439,7 @@ namespace AO3EbookDownloader
             this.activeDownloads = true;
             UpdateControls(true);
 
-            var fics = new List<Fic>();
+            var fics = new SerializableDictionary<string, Fic>();
             var dlLinks = new List<String>();
 
             Task.Factory.StartNew(() =>
@@ -426,29 +449,60 @@ namespace AO3EbookDownloader
                     Fic fic = GetFic(urlEntry);
                     if (fic != null)
                     {
-                        fics.Add(fic);
+                        fics[fic.ID] = fic;
                         IncrementProgress(labelProgressedFetched);
                     }
                 }
             }).ContinueWith(x =>
             {
-                foreach (Fic fic in fics)
+                // TODO create flag
+                //foreach (Fic fic in fics)
+                //{
+                //    foreach (KeyValuePair<string, string> entry in fic.Downloads)
+                //    {
+                //        dlLinks.Add(entry.Value);
+                //    }
+
+                //}
+                //Task[] tasks = new Task[dlLinks.Count];
+                //for (int i = 0; i < dlLinks.Count; i++)
+                //{
+                //    string link = dlLinks[i];
+                //    tasks[i] = Task.Factory.StartNew(() => DownloadEbook(link));  // THIS IS IMPORTANT
+                //}
+                //Task.WaitAll(tasks);  // SO IS THIS
+            //}).ContinueWith(x =>
+            //{
+                // Both download methods are kept for now, for performance testing purposes
+
+                // New method, to hopefully make connecting metadata and file easier
+                List<string> formats = getSelectedFormats();
+                int totalDl = fics.Count * formats.Count;
+                int currentDl = 0;
+                Task[] tasks = new Task[totalDl];
+                foreach (KeyValuePair<string, Fic> pair in fics)
                 {
-                    foreach (KeyValuePair<string, string> entry in fic.Downloads)
+                    var fic = pair.Value;
+                    tasks[currentDl] = Task.Factory.StartNew(() => 
                     {
-                        dlLinks.Add(entry.Value);
-                    }
+                        foreach (KeyValuePair<string, string> entry in fic.Downloads)
+                        {
+                            if (formats.Contains(entry.Key))
+                            {
+
+                                string success = DownloadEbook(entry.Value);
+                                if (!String.IsNullOrEmpty(success))
+                                {
+                                    fic.LocalFiles[entry.Key] = success;
+                                }
+                            }
+                        }
+                    });
+                    currentDl++;
                     
                 }
-            }).ContinueWith(x =>
-            {
-                Task[] tasks = new Task[dlLinks.Count];
-                for (int i = 0; i < dlLinks.Count; i++)
-                {
-                    string link = dlLinks[i];
-                    tasks[i] = Task.Factory.StartNew(() => DownloadEbook(link));
-                }
                 Task.WaitAll(tasks);
+
             }).ContinueWith(x => 
             {
                 if (this.userCancel)
@@ -458,6 +512,36 @@ namespace AO3EbookDownloader
             }).ContinueWith(x => 
             {
                 this.activeDownloads = false;
+                Dictionary<string, Fic> allFics = new Dictionary<string, Fic>();
+                try
+                {
+                    allFics = MiddleDude.GetFics();
+                    //allFics = XmlOperator.DeserializeFile<SerializableDictionary<string, Fic>>(Constants.WorksRef);
+                }
+                catch (System.Xml.XmlException)
+                {
+
+                }
+                if (allFics != null)
+                {
+                    foreach (KeyValuePair<string, Fic> pair in fics)
+                    {
+                        if (!allFics.ContainsKey(pair.Key))
+                        {
+                            allFics[pair.Key] = pair.Value;
+                        }
+                        else
+                        {
+                            Fic mergedFic = Fic.Merge(allFics[pair.Key], pair.Value);
+                            allFics[pair.Key] = mergedFic;
+                        }
+                    }
+                }
+                else
+                {
+                    allFics = fics;
+                }
+                MiddleDude.StoreFics(allFics);
                 UpdateControls(false);
                 Log("Downloads complete!");
             });
@@ -499,6 +583,7 @@ namespace AO3EbookDownloader
 
         private void Move_Click(object sender, RoutedEventArgs e)
         {
+            // TODO only move selected formats; if html and epub are selected while downloading, and html is deselected before moving, only move epub
             if (Directory.Exists($@"{userSettings.DevicePath.Substring(0, 1)}:\"))
             {
                 Task.Factory.StartNew(() =>
@@ -526,6 +611,32 @@ namespace AO3EbookDownloader
             {
                 Log("Device not found, check if the drive letter has changed.");
             }
+        }
+
+        private void ButtonLib_Click(object sender, RoutedEventArgs e)
+        {
+            if (!activeDownloads)
+            {
+                //Close();
+            }
+            if (libWin == null)
+            {
+                this.Dispatcher.Invoke(new Action(() =>
+                {
+                    libWin = new LibWindow();
+                    libWin.Show();
+                    libWin.Closed += new EventHandler(LibWin_Closed);
+                }));
+            }
+            else
+            {
+                libWin.Activate();
+            }
+        }
+
+        private void LibWin_Closed(object sender, EventArgs e)
+        {
+            libWin = null;
         }
 
         private void PasteBox_GotFocus(object sender, RoutedEventArgs e)
@@ -576,8 +687,9 @@ namespace AO3EbookDownloader
             Process.Start(Constants.GitHubUrl);
         }
 
+
         #endregion Events
 
-       
+
     }
 }

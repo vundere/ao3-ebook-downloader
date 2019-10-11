@@ -17,6 +17,8 @@ namespace AO3EbookDownloader
         double DownloadAttemptExponential { get; set; }
         //Checkboxes
         [Option(DefaultValue = false)]
+        Boolean GetAzw3 { get; set; }
+        [Option(DefaultValue = false)]
         Boolean GetEpub { get; set; }
         [Option(DefaultValue = false)]
         Boolean GetMobi { get; set; }
