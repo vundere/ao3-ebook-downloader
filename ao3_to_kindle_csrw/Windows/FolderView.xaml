@@ -1,0 +1,15 @@
+﻿<Window x:Class="AO3EbookDownloader.Windows.FolderView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:AO3EbookDownloader.Windows"
+        mc:Ignorable="d"
+        Title="FolderView" Height="500" Width="400">
+    <Grid>
+        <Grid x:Name="GridInnerLeft" HorizontalAlignment="Left" Width="267">
+            <TreeView></TreeView>
+        </Grid>
+        <Grid x:Name="GridInnerRight" HorizontalAlignment="Right" Width="125"/>
+    </Grid>
+</Window>

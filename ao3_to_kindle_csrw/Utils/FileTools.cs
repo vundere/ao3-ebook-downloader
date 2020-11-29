@@ -109,5 +109,22 @@ namespace AO3EbookDownloader
             return lF;
         }
 
+        public static bool IsBookFolder(string folderpath)
+        {
+            foreach(string ext in Constants.AllowedExt)
+            {
+                if (Directory.GetFiles(folderpath, "."+ext).Length == 0)
+                {
+                    continue;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+            return false;
+            
+        }
+
     }
 }

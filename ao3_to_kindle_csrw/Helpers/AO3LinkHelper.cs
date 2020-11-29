@@ -53,12 +53,37 @@ namespace AO3EbookDownloader
             // Multi-value attributes
             var authorElements = htmlDoc.DocumentNode.SelectNodes(Xpaths.Author);
             List<String> authors = new List<String>();
-            foreach (HtmlNode authorNode in authorElements)
-            {
-                string authorUrl = authorNode.Attributes["href"].Value;
-                string authorName = authorNode.InnerText;
-                authors.Add(authorName + " : " + authorUrl);
+            if (authorElements != null) {
+                foreach (HtmlNode authorNode in authorElements)
+                {
+                    string authorUrl;
+                    try
+                    {
+                        authorUrl = authorNode.Attributes["href"].Value;
+                    }
+                    catch (Exception)
+                    {
+
+                        authorUrl = "";
+                    }
+                    string authorName;
+                    try
+                    {
+                        authorName = authorNode.InnerText;
+                    }
+                    catch (Exception)
+                    {
+                        authorName = "Anonymous";
+                    }
+                
+                    authors.Add(authorName + " : " + authorUrl);
+                }
             }
+            else
+            {
+                authors.Add("Anonymous");
+            }
+            
 
             SerializableDictionary<string, string> downloadLinks = new SerializableDictionary<string, string>();
             foreach (string format in formats)

@@ -17,10 +17,10 @@ namespace AO3EbookDownloader
 
         private string GetParentDir(string workId)
         {
-            
+            return null;
         }
 
-        public static void MoveFromKindle()
+        public static void MoveFromKindle(List<string> folders)
         {
 
         }

@@ -9,9 +9,9 @@ namespace AO3EbookDownloader
         string DownloadLocation { get; set; }
         [Option(DefaultValue = "")]
         string DevicePath { get; set; }
-        [Option(DefaultValue = 5)]
+        [Option(DefaultValue = 1)]
         int DownloadMaxAttempts { get; set; }
-        [Option(DefaultValue = 0.5)]
+        [Option(DefaultValue = 1.0)]
         double DownloadAttemptCooldown { get; set; }
         [Option(DefaultValue = 2.0)]
         double DownloadAttemptExponential { get; set; }

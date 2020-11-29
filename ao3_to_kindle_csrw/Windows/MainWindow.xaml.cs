@@ -60,7 +60,30 @@ namespace AO3EbookDownloader
 
         #region Methods
 
-        private string DownloadEbook(String downloadUrl)
+        private void BeGentle(int linksTotal=50, int exponential=2)
+        {
+            Thread.Sleep((int)((Math.Pow(exponential, 2)) * linksTotal * 10));
+        }
+
+        private void OpenFolder(string folderPath)
+        {
+            if (Directory.Exists(folderPath))
+            {
+                ProcessStartInfo startInfo = new ProcessStartInfo
+                {
+                    Arguments = folderPath,
+                    FileName = "explorer.exe"
+                };
+                Process.Start(startInfo);
+            }
+            else
+            {
+                MessageBox.Show(string.Format("{0} Directory does not exist!", folderPath));
+            }
+        }
+
+
+private string DownloadEbook(String downloadUrl)
         {
             if (!CreateFolder(userSettings.DownloadLocation))
             {
@@ -131,8 +154,7 @@ namespace AO3EbookDownloader
                         downloadedFiles.Add(filename);
                         this.pendingDownloads.Remove(w);
                     }
-                    IncrementProgress(labelProgressDownloaded);
-                    Log($"Downloaded {filename}...");
+
                 }
             }
             while (!fileDownloaded && attempts < userSettings.DownloadMaxAttempts);
@@ -403,6 +425,7 @@ namespace AO3EbookDownloader
                 dialog.Description = "Select Folder...";
                 if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
+                    // userSettings.DownloadLocation = dialog.SelectedPath;
                     saveLocation.Text = dialog.SelectedPath;
                 }
             }
@@ -416,6 +439,7 @@ namespace AO3EbookDownloader
                 dialog.Description = "Select Folder...";
                 if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
+                    // userSettings.DevicePath = dialog.SelectedPath;
                     deviceLocation.Text = dialog.SelectedPath;
                 }
             }
@@ -442,6 +466,12 @@ namespace AO3EbookDownloader
             var fics = new SerializableDictionary<string, Fic>();
             var dlLinks = new List<String>();
 
+            // NOTE: These are also set when using the browse dialog
+            userSettings.DownloadLocation = saveLocation.Text;
+            userSettings.DevicePath = deviceLocation.Text;
+
+
+
             Task.Factory.StartNew(() =>
             {
                 foreach (string urlEntry in urlEntries)
@@ -451,6 +481,9 @@ namespace AO3EbookDownloader
                     {
                         fics[fic.ID] = fic;
                         IncrementProgress(labelProgressedFetched);
+
+                        BeGentle(linksTotal: urlEntries.Count);
+
                     }
                 }
             }).ContinueWith(x =>
@@ -494,7 +527,11 @@ namespace AO3EbookDownloader
                                 if (!String.IsNullOrEmpty(success))
                                 {
                                     fic.LocalFiles[entry.Key] = success;
+                                    IncrementProgress(labelProgressDownloaded);
+                                    Log($"Downloaded {success}...");
+
                                 }
+                                BeGentle(linksTotal: totalDl);
                             }
                         }
                     });
@@ -687,6 +724,15 @@ namespace AO3EbookDownloader
             Process.Start(Constants.GitHubUrl);
         }
 
+        private void dlOpen_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFolder(userSettings.DownloadLocation);
+        }
+
+        private void deviceOpen_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFolder(userSettings.DevicePath);
+        }
 
         #endregion Events
 

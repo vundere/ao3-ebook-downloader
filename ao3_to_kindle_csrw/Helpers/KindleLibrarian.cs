@@ -13,6 +13,8 @@ namespace AO3EbookDownloader
 
         public static Settings userSettings = new ConfigurationBuilder<Settings>().UseIniFile(Constants.SettingsPath).Build();
 
+        public static Dictionary<string, string> kindleFiles = new Dictionary<string, string>();  // PLACEHOLDER FOR NOW, cba getting this bit to work just yet
+
         public static bool DetectKindle()
         {
             // TODO move this out somewhere?

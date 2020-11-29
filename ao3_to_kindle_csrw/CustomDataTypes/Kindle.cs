@@ -178,7 +178,7 @@ namespace AO3EbookDownloader
 
         public static Settings userSettings = new ConfigurationBuilder<Settings>().UseIniFile(Constants.SettingsPath).Build();
 
-        public bool Detect()
+        public static bool Detect(Kindle k = null)
         {
             // TODO move this out somewhere?
             DriveInfo[] drives = DriveInfo.GetDrives();
@@ -188,7 +188,10 @@ namespace AO3EbookDownloader
                 {
                     if (drives[i].VolumeLabel == "Kindle" && (userSettings.DevicePath == "" || drives[i].Name.First() != userSettings.DevicePath.First()))
                     {
-                        DevicePath = drives[i].Name;
+                        if (k != null)
+                        {
+                            k.DevicePath = drives[i].Name;
+                        }
                         return true;
                     }
 
